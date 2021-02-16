@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="flex-box-row">
+    <button type="button" class="btn btn-dark"><a href ="{% url 'create-article' %}">Add New Article</a></button>
+        <br>
+        <br>
+     <table class="table table-sm">
+                <tr>
+                    <th>Headline</th>
+                    <th>Content</th>
+                    <th>Published</th>
+                    <th>Created</th>
+                    <th>Modified</th>
+                    <th>Actions</th>
+                </tr>
+                {% for article in object_list %}
+                <tr>
+                    <td><a href="{% url 'article-detail' article.pk %}">{{ article.headline}}</a></td>
+                    <td>{{ article.content }}</td>
+                    <td>{{ article.pub_date|date }}</td>
+                    <td>{{ article.article_created|date:'M.d,Y' }},{{ article.article_created|time:'H:i' }}</td>
+                    <td>{{ article.modified_on|date:'M.d,Y' }},{{ article.modified_on|time:'H:i' }}</td>
+                    <td><a href="{% url 'update-article' article.pk %}">Edit</a>
+                        <a href="{% url 'delete-article' article.pk %}">Delete</a>
+                    </td>
+                </tr>
+
+{% endfor %}
+     </table>
+</div>
+{% endblock content %}

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{%block content %}
+<h2>{{ object.headline }}</h2>
+<p>{{ object.content }}</p>
+<p>Published: {{ object.pub_date|date }}</p>
+<p>Article Created : {{ object.article_created|date:'Y-m-d H:i' }}</p>
+<p>Last Modified: {{ object.modified_on|date:'Y-m-d H:i' }}</p>
+<p>Date: {{ now|date }}</p>
+<a href="{% url 'update-article' object.pk %}">Edit Article</a>
+<a href="{% url 'delete-article' object.pk %}">Delete Article</a>
+{%endblock content %}

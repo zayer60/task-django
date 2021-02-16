@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<form action ='/contact/' method="post">{% csrf_token %}
+
+{% comment %}
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+{% endcomment %}
+    <div class="fieldWrapper">
+    {{ form.subject.errors }}
+    {{ form.subject.label_tag }}
+    {{ form.subject }}
+    </div>
+    <div class="fieldWrapper">
+    {{ form.message.errors }}
+    {{ form.message.label_tag }}
+    {{ form.message }}
+    </div>
+     <div class="fieldWrapper">
+    {{ form.sender.errors }}
+    {{ form.sender.label_tag }}
+    {{ form.sender }}
+    </div>
+     <div class="fieldWrapper">
+    {{ form.cc_myself.errors }}
+    {{ form.cc_myself.label_tag }}
+    {{ form.cc_myself }}
+    </div>
+    <input type="submit" value="Save">
+
+
+</form>
+{% endblock content %}
