@@ -3,6 +3,8 @@ from django.shortcuts import render
 from django.shortcuts import render
 from django.views.generic import TemplateView, DetailView, ListView, FormView
 from django.views.generic.base import View
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import Article
 from django.utils import timezone
 from .form import ArticleForm
@@ -16,7 +18,37 @@ from datetime import date
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from rest_framework import generics
+from .serializers import ArticleListSerializer
+from .permissions import IsAuthorOrReadOnly
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from rest_framework import permissions
 
+
+class RegisterUser(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        username = request.data['username']
+        password = request.data['password']
+        user = User(username=username)
+        user.set_password(password)
+        refresh = RefreshToken.for_user(user)
+        return Response({'status': 'success', 'refresh': str(refresh),
+                         'access': str(refresh.access_token)})
+
+
+class ArticleApiList(generics.ListCreateAPIView):
+    queryset = Article.objects.all()
+    serializer_class = ArticleListSerializer
+
+
+class ArticleDetailApiList(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthorOrReadOnly,)
+    queryset = Article.objects.all()
+    serializer_class = ArticleListSerializer
 
 
 class ArticleDetailView(DetailView):
@@ -49,7 +81,7 @@ class ArticleListView(ListView):
 #        super().form_valid(form)
 
 
-class CreateArticle(SuccessMessageMixin,CreateView):
+class CreateArticle(SuccessMessageMixin, CreateView):
     model = Article
     form_class = ArticleForm
     # fields = '__all__'
@@ -57,7 +89,7 @@ class CreateArticle(SuccessMessageMixin,CreateView):
     success_message = 'Article was added successfully'
 
 
-class UpdateArticle(SuccessMessageMixin,UpdateView):
+class UpdateArticle(SuccessMessageMixin, UpdateView):
     model = Article
     form_class = ArticleForm
     # fields = ['headline', 'content']
@@ -65,12 +97,11 @@ class UpdateArticle(SuccessMessageMixin,UpdateView):
     success_message = 'Article was updated successfully'
 
 
-class DeleteArticle(SuccessMessageMixin,DeleteView):
+class DeleteArticle(SuccessMessageMixin, DeleteView):
     model = Article
     template_name = 'articleapp/article_delete.html'
     success_url = reverse_lazy('article-list')
     success_message = 'Article was deleted successfully'
-
 
 
 class ArticleYearArchive(YearArchiveView):
@@ -102,11 +133,9 @@ class ArticleDayArchive(DayArchiveView):
     date_field = 'pub_date'
 
 
-
-
 class CSVGenerate(TemplateView):
 
-    def get(self,request):
+    def get(self, request):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="articles.csv"'
         writer = csv.writer(response)
@@ -122,7 +151,7 @@ class CSVGenerate(TemplateView):
 
 class CSVToday(TemplateView):
 
-    def get(self,request):
+    def get(self, request):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="articlestoday.csv"'
         writer = csv.writer(response)

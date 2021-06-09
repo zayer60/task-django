@@ -1,11 +1,14 @@
 from django.urls import path
 from .views import ArticleDetailView, ArticleListView, CreateArticle, UpdateArticle, \
     DeleteArticle, ArticleYearArchive, ArticleMonthArchive, ArticleWeekArchive, ArticleDayArchive, \
-    CSVGenerate, CSVToday
+    CSVGenerate, CSVToday, ArticleApiList, ArticleDetailApiList, RegisterUser
 from django.views.generic.dates import ArchiveIndexView
 from .models import Article
 
 urlpatterns = [
+    path('api/', ArticleApiList.as_view(), name='article-list-api'),
+    path('api/<int:pk>/', ArticleDetailApiList.as_view(), name='article-detail-api'),
+    path('register/', RegisterUser.as_view(),name='registeruser '),
     path('article/', ArticleListView.as_view(), name='article-list'),
     path('article/<int:pk>', ArticleDetailView.as_view(), name='article-detail'),
     path('article/create/', CreateArticle.as_view(), name='create-article'),

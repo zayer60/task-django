@@ -1,9 +1,11 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 import datetime
 
 
 class Article(models.Model):
+    author=models.ForeignKey(User, on_delete=models.CASCADE)
     headline=models.CharField(max_length=100)
     content=models.TextField()
     pub_date=models.DateField()
